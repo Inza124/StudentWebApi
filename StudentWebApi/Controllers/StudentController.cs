@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using StudentWebApi.Models;
+using StudentWebApi.Services;
 
 namespace StudentWebApi.Controllers
 {
@@ -12,8 +13,15 @@ namespace StudentWebApi.Controllers
     [ApiController]
     public class StudentController : ControllerBase
     {
+        private readonly IStudentServices _service;
+
+        public StudentController(IStudentServices services)
+        {
+            _service = services;
+        }
         [HttpPost]
-        public ActionResult<StudentModel> AddStudentItems(StudentModel students)
+        [Route("AddStudents")]
+        public ActionResult<StudentModel> AddStudents(StudentModel students)
         {
             var student = _service.AddStudents(students);
             if(student == null)
@@ -21,6 +29,18 @@ namespace StudentWebApi.Controllers
                 return NotFound();
             }
             return student;
+        }
+
+        [HttpGet]
+        [Route("GetStudents")]
+        public ActionResult<Dictionary<string, StudentModel>> GetStudents()
+        {
+            var students = _service.getStudents();
+            if (students.Count == 0)
+            {
+                return NotFound();
+            }
+            return students;
         }
     }
 }
